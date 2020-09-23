@@ -1,0 +1,198 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>AJAX - Quiz</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<style>
+		*{margin:0;padding:0;}
+			.content{
+			      min-width:60%;
+			      margin:auto;
+			     text-align:center;
+			     position:relative; 
+			     
+				 z-index:0;
+			}
+			#div { z-index:0;text-align: center; //height:60vh; margin: 50px auto;text-transform:uppercase;}
+			#div img{
+			   min-width:100%;
+			   min-height:100%;
+			}	
+			.text{
+			  position:absolute;
+			  z-index:999;
+			  left:0;
+			  bottom:0%;
+			  //height:50px;
+			  min-width:100%;
+			  background:rgba(98,143,136,.8);
+			  color:#fff;
+			  font:bold 1em Arial;
+			  text-align:center;
+			  
+			}
+			.text h1, p{
+			    position:relative;
+			}
+			.text >h1{
+			text-align:center;
+			font-size:2.5em;
+			 bottom:50px;
+			}
+			.text > p{
+			  display:block;
+			  bottom:20px;
+			  font:bold 1.2em Arial;
+			}
+			#button{
+			  z-index:9999;
+			  position:absolute;
+			  bottom:-60px;
+			  left:20%;
+			 display:flex;
+			}
+			#button a{
+				color:none;
+				margin:0 9px;
+				padding:0;
+				display:block;
+				width:25px;
+				height:25px;
+				border:1px solid;
+				border-radius:50%;
+				background:#7f7f7f;
+				text-decoration:none;
+			  
+			}
+			#button a:first-child{
+			  background:#000;
+			}
+@media screen and (min-width:750px) {
+				.content{
+			      max-width:60%;
+			      margin:auto;
+				 box-shadow:1px 5px 15px 5px #888888;
+				 
+			}
+			#div {
+  			max-height:60vh;
+			}
+			#div img{
+			   min-width:100%;
+			   height:50vh;
+			}
+			.text{
+			   
+			}
+		  #button{
+			  left:35%;
+			
+			}
+		   }
+							</style>
+	</head>
+	<body>
+	  <div class="content">
+		<div id="div"></div>
+		<div class="text"></div>
+		<div id="button"></div>
+	</div>
+	  <script>
+	$(document).ready(function (){
+       let sldr,text,t;
+	   let imgs = [];
+	   let cardTxt = [];
+	   let textUrl = [];
+	   let inc = 0;
+	   let div = $("#div");
+	     
+		 butSty()
+	     
+	   function butSty(){
+        	let kb = ""    
+		for(x = 1;x<=imgs.length;x++){
+		   kb+= '<a href="#"></a>';
+		 }
+		    $("#button").append(kb);
+			
+			$("#button a").click(function (){
+	         inc  = $(this).index();
+			 burKonubka()
+			   start()
+			  //show()
+			  inc++;
+	         })
+	   }
+	   function burKonubka(){
+	       $("#button a").attr("style","");
+				 $("#button a:first-child").css("background","#7f7f7f")
+				$("#button a").eq(inc).css({
+				  background:'#000'
+				}).hide().fadeIn(1000) 
+	   }
+	   
+	 
+	   	  
+	    
+		 function openJson(xml){
+		    sldr = JSON.parse(xml.responseText).slayder;
+			for(i=0;i<sldr.length;i++){
+			 text = sldr[i];
+			 imgs[i] = text.image;
+			 cardTxt[i] = text.text;
+			 textUrl[i] =  text.url;
+			}
+			console.log(imgs)
+			 butSty()
+			 start()
+		 }
+        
+    		 
+		 function show(){
+		  if(inc >= imgs.length)inc = 0;
+		   if(inc < 0) inc   = imgs.length - 1;
+		    $("#div").html('<a href="'+textUrl[inc]+'" target="_blank"><img src="img/'+imgs[inc]+'"></a>').hide().fadeIn(1000)
+			content()
+			
+		 }
+		 function content(){
+		    let kod  = ""
+		    kod +='<h1>' +cardTxt[inc].h1+'</h1>';
+			kod += '<p>'+cardTxt[inc].p+'<p>';
+			$(".text").html(kod);
+			
+			
+		 }
+		 function start(){
+		   stop()
+		   show();
+		   t = setInterval( ()=>{
+            inc ++;
+            show();
+			 burKonubka()
+			},3000)
+		 }
+	    
+	   function stop(){
+	     clearInterval(t)
+	  }
+	   loadDoc('slayder.json', openJson);
+	  
+	   function loadDoc(url,cFunction){
+	     let xhttp = new XMLHttpRequest();
+		 xhttp.onreadystatechange = function (){
+		   if(this.readyState == 4 && this.status == 200){
+		     cFunction(this);
+		   }
+		 };
+		 xhttp.open("GET", url ,true);
+		 xhttp.send();
+	   }
+		
+		});
+		</script>
+	
+	</body>
+</html>
